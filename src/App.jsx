@@ -20,13 +20,21 @@ const products = productsFromServer.map((product) => {
 
 export const App = () => {
   const [filteredUserId, setFilteredUserId] = useState(null);
+  const [filteredName, setFilteredName] = useState('');
 
   const visibleProducts = products.filter((product) => {
+    let isFiltered = true;
+
     if (filteredUserId !== null) {
-      return product.user.id === filteredUserId;
+      isFiltered = product.user.id === filteredUserId;
     }
 
-    return true;
+    if (filteredName) {
+      isFiltered = isFiltered
+      && product.name.toLowerCase().includes(filteredName.toLowerCase());
+    }
+
+    return isFiltered;
   });
 
   return (
@@ -74,21 +82,25 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={filteredName}
+                  onChange={event => setFilteredName(event.target.value)}
                 />
 
                 <span className="icon is-left">
                   <i className="fas fa-search" aria-hidden="true" />
                 </span>
 
-                <span className="icon is-right">
-                  {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
-                </span>
+                {filteredName && (
+                  <span className="icon is-right">
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setFilteredName('')}
+                    />
+                  </span>
+                )}
               </p>
             </div>
 
